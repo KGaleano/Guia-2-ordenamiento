@@ -1,0 +1,156 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package persona;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Arrays;
+import java.util.Comparator;
+
+class Persona {
+    String cedula;
+    String nombre;
+    double estatura;
+    int edad;
+
+    public Persona(String cedula, String nombre, double estatura, int edad) {
+        this.cedula = cedula;
+        this.nombre = nombre;
+        this.estatura = estatura;
+        this.edad = edad;
+    }
+}
+
+public class Main extends JFrame {
+    Persona[] personas;
+    JComboBox<String> sortByComboBox;
+    JComboBox<String> sortMethodComboBox;
+    JTextArea resultTextArea;
+
+    public Main() {
+        setTitle("Ordenar Personas");
+        setSize(400, 300);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new FlowLayout());
+
+        sortByComboBox = new JComboBox<>(new String[]{"Estatura", "Edad"});
+        topPanel.add(sortByComboBox);
+
+        sortMethodComboBox = new JComboBox<>(new String[]{"MergeSort", "BubbleSort"});
+        topPanel.add(sortMethodComboBox);
+
+        JButton sortButton = new JButton("Ordenar");
+        sortButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ordenarPersonas();
+            }
+        });
+        topPanel.add(sortButton);
+
+        add(topPanel, BorderLayout.NORTH);
+
+        resultTextArea = new JTextArea();
+        add(new JScrollPane(resultTextArea), BorderLayout.CENTER);
+
+        // Solicitar ingreso de datos por teclado
+        solicitarDatos();
+    }
+
+    private void solicitarDatos() {
+        int cantidadPersonas = Integer.parseInt(JOptionPane.showInputDialog("Ingrese la cantidad de personas:"));
+        personas = new Persona[cantidadPersonas];
+        for (int i = 0; i < cantidadPersonas; i++) {
+            String cedula = JOptionPane.showInputDialog("Ingrese la cédula de la persona " + (i + 1) + ":");
+            String nombre = JOptionPane.showInputDialog("Ingrese el nombre de la persona " + (i + 1) + ":");
+            double estatura = Double.parseDouble(JOptionPane.showInputDialog("Ingrese la estatura de la persona " + (i + 1) + ":"));
+            int edad = Integer.parseInt(JOptionPane.showInputDialog("Ingrese la edad de la persona " + (i + 1) + ":"));
+            personas[i] = new Persona(cedula, nombre, estatura, edad);
+        }
+    }
+
+    private void ordenarPersonas() {
+        String sortBy = sortByComboBox.getSelectedItem().toString();
+        String sortMethod = sortMethodComboBox.getSelectedItem().toString();
+
+        Comparator<Persona> comparator = null;
+        if (sortBy.equals("Estatura")) {
+            comparator = Comparator.comparingDouble(p -> p.estatura);
+        } else if (sortBy.equals("Edad")) {
+            comparator = Comparator.comparingInt(p -> p.edad);
+        }
+
+        if (comparator != null) {
+            if (sortMethod.equals("MergeSort")) {
+                mergeSort(personas, comparator);
+            } else if (sortMethod.equals("BubbleSort")) {
+                bubbleSort(personas, comparator);
+            }
+
+            mostrarResultados(personas);
+        }
+    }
+
+    private void mergeSort(Persona[] arr, Comparator<Persona> comparator) {
+        if (arr.length > 1) {
+            int mid = arr.length / 2;
+            Persona[] left = Arrays.copyOfRange(arr, 0, mid);
+            Persona[] right = Arrays.copyOfRange(arr, mid, arr.length);
+
+            mergeSort(left, comparator);
+            mergeSort(right, comparator);
+
+            int i = 0, j = 0, k = 0;
+            while (i < left.length && j < right.length) {
+                if (comparator.compare(left[i], right[j]) < 0) {
+                    arr[k++] = left[i++];
+                } else {
+                    arr[k++] = right[j++];
+                }
+            }
+            while (i < left.length) {
+                arr[k++] = left[i++];
+            }
+            while (j < right.length) {
+                arr[k++] = right[j++];
+            }
+        }
+    }
+
+    private void bubbleSort(Persona[] arr, Comparator<Persona> comparator) {
+        int n = arr.length;
+        Persona temp;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (comparator.compare(arr[j], arr[j + 1]) > 0) {
+                    temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+            }
+        }
+    }
+
+    private void mostrarResultados(Persona[] personas) {
+        resultTextArea.setText("");
+        for (Persona persona : personas) {
+            resultTextArea.append("Cédula: " + persona.cedula + ", Nombre: " + persona.nombre + ", Estatura: " + persona.estatura + ", Edad: " + persona.edad + "\n");
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                Main main = new Main();
+                main.setVisible(true);
+            }
+        });
+    }
+}
