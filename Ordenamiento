@@ -1,0 +1,302 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ordenamiento.guia.pkg3;
+import java.util.Scanner;
+import java.util.Random;
+public class OrdenamientoGuia3 {
+
+  
+    public static void main(String[] args) {
+          Scanner entra=new Scanner(System.in);
+        int filasMatriz1,columnasMatriz1,filasMatriz2,columnasMatriz2, y=0, z=0;
+        System.out.println("Desea realizar operaciones de matrices, 1 para si, 2 para no");
+        y=entra.nextInt();
+        if (y==1){
+        
+        System.out.println("Ingrese el numero de filas de la primera matriz:");
+        filasMatriz1=entra.nextInt();
+        System.out.println("Ingrese el numero de columnas de la primera matriz:");
+        columnasMatriz1=entra.nextInt();
+
+        System.out.println("Ingrese el numero de filas de la segunda matriz:");
+         filasMatriz2 = entra.nextInt();
+        System.out.println("Ingrese el numero de columnas de la segunda matriz:");
+        columnasMatriz2 = entra.nextInt();
+     double[][] matriz1 = new double [filasMatriz1][columnasMatriz1];
+     double[][] matriz2 = new double [filasMatriz2][columnasMatriz2];
+     for(int i=0;i<filasMatriz1;i++){
+          for(int j=0;j<columnasMatriz1;j++){
+              System.out.println( "Fila: "+i+" Columna: " +j);
+              matriz1[i][j]=entra.nextDouble();
+          }
+     }
+            System.out.println("Segunda matriz");
+     for(int i=0;i<filasMatriz2;i++){
+          for(int j=0;j<columnasMatriz2;j++){
+              System.out.println("Fila: "+ i +" Columna: " + j);
+              matriz2[i][j]=entra.nextDouble();
+          }
+     }
+      
+     do{
+         System.out.println("Seleccione alguna de las operaciones\n1.Suma de matrices\n2.Producto de matrices\n3.Producto de escalar con una matriz\n4.Traspuesta de una matriz\n5.Finalizar programa");
+        int opcion=entra.nextInt();
+        switch (opcion) {
+            case 1:
+                if (filasMatriz1!=filasMatriz2||columnasMatriz1!=columnasMatriz2) {
+                    System.out.println("Las matrices deben tener las mismas columas y filas para poder sumarse");
+                    break;
+                }else{
+                    double[][] resultadoSuma=sumaMatrices(matriz1, matriz2);//hace que la matriz sea igual a la suma de matrices, y despues la imprime
+                    imprimirMatriz(resultadoSuma);
+                    break;
+                }
+              
+            case 2:
+                double[][] resultadoProducto=productoMatrices(matriz1, matriz2);
+                imprimirMatriz(resultadoProducto);
+                break;
+            case 3:
+                System.out.println("Ingrese el escalar:");
+                double escalar = entra.nextDouble();
+                double[][] resultadoProductoEscalar=productoEscalarMatriz(escalar, matriz1);
+                imprimirMatriz(resultadoProductoEscalar);
+                break;
+            case 4:
+                double[][] resultadoTraspuesta=traspuestaMatriz(matriz1);
+                imprimirMatriz(resultadoTraspuesta);
+                break;
+            case 5:
+                y=0;
+                break;
+            default:
+                System.out.println("Seleccione alguna de las opciones");
+                
+    }
+         }while(y!=0);
+        }
+        int x;
+        System.out.println("Desea realizar metodos de ordenamiento, 1 para si, 2 para no");
+        x=entra.nextInt();
+        if (x==1){
+             int[]tamaño={100, 500, 1000, 5000, 10000};
+
+        System.out.println("Tamaño del arreglo | Tiempo Burbuja | Tiempo Inserción | Tiempo Selección | Tiempo MergeSort");
+        
+
+        for (int tam : tamaño) {
+            double[] numeros=generarNumerosAleatorios(tam);
+
+            long tiempoInicio,tiempoFin;
+            
+            // Método  burbuja
+            tiempoInicio =System.nanoTime();
+            burbuja(numeros.clone());
+            tiempoFin=System.nanoTime();
+            long tiempoBurbuja=tiempoFin-tiempoInicio;
+
+            // Método inserción
+            tiempoInicio=System.nanoTime();
+            insercion(numeros.clone());
+            tiempoFin=System.nanoTime();
+            long tiempoInsercion=tiempoFin-tiempoInicio;
+
+            // Método selección
+            tiempoInicio=System.nanoTime();
+            seleccion(numeros.clone());
+            tiempoFin=System.nanoTime();
+            long tiempoSeleccion=tiempoFin-tiempoInicio;
+
+            // Método mergesort
+            tiempoInicio=System.nanoTime();
+            mergesort(numeros.clone(),0,numeros.length - 1);
+            tiempoFin=System.nanoTime();
+            long tiempoMergeSort=tiempoFin-tiempoInicio;
+
+            System.out.printf("%17d | %14d | %16d | %16d | %16d\n", tam, tiempoBurbuja, tiempoInsercion, tiempoSeleccion, tiempoMergeSort);
+        }
+              
+}
+}
+    public static double[][] sumaMatrices(double[][] matriz1, double[][] matriz2) {
+        int filas=matriz1.length;
+        int columnas=matriz1[1].length;
+        double[][] resultado=new double[filas][columnas];
+
+        for (int i=0;i<filas;i++) {
+            for (int j=0;j<columnas;j++) {
+                resultado[i][j]=matriz1[i][j]+matriz2[i][j];
+            }
+        }
+        return resultado;
+    }
+
+    public static double[][] productoMatrices(double[][] matriz1,double[][] matriz2) {
+        int filasMatriz1=matriz1.length;
+        int columnasMatriz1=matriz1[0].length;
+        int columnasMatriz2=matriz2[0].length;
+        double[][] resultado=new double[filasMatriz1][columnasMatriz2];
+
+        for (int i=0;i<filasMatriz1;i++) {
+            for (int j=0;j<columnasMatriz2;j++) {
+                for (int k=0;k<columnasMatriz1;k++) {
+                    resultado[i][j]+=matriz1[i][k]*matriz2[k][j];
+                }
+            }
+        }
+        return resultado;
+    }
+
+    
+    
+       public static double[][] leerMatriz(int filas, int columnas, Scanner scanner) {
+        double[][] matriz=new double[filas][columnas];
+        System.out.println("Ingrese los elementos de la matriz:");
+
+        for (int i=0;i<filas;i++) {
+            for (int j=0;j<columnas;j++) {
+                matriz[i][j]=scanner.nextDouble();
+            }
+        }
+        return matriz;
+    }
+    public static double[][] productoEscalarMatriz(double escalar, double[][] matriz) {
+        int filas=matriz.length;
+        int columnas=matriz[0].length;
+        double[][] resultado=new double[filas][columnas];
+
+        for (int i = 0;i<filas;i++) {
+            for (int j=0;j<columnas;j++) {
+                resultado[i][j]=escalar*matriz[i][j];
+            }
+        }
+        return resultado;
+    }
+
+    public static double[][] traspuestaMatriz(double[][] matriz) {
+        int filas=matriz.length;
+        int columnas=matriz[0].length;
+        double[][] traspuesta=new double[columnas][filas];
+
+        for (int i=0;i<filas;i++) {
+            for (int j=0;j<columnas;j++) {
+                traspuesta[j][i]=matriz[i][j];
+            }
+        }
+        return traspuesta;
+    }
+
+    public static void imprimirMatriz(double[][] matriz) {
+        System.out.println("Resultado:");
+
+        for (double[] fila : matriz) {
+            for (double elemento : fila) {
+                System.out.print(elemento + " ");
+            }
+            System.out.println();
+        }
+    }
+    
+    public static double[] generarNumerosAleatorios(int tam) {
+        double[] numeros=new double[tam];
+        Random random=new Random();
+        for (int i=0;i<tam;i++) {
+            numeros[i]=random.nextDouble();
+        }
+        return numeros;
+    }
+
+    public static void burbuja(double[] arr) {
+        int n=arr.length;
+        for (int i=0;i<n-1;i++) {
+            for (int j=0;j<n-i-1;j++) {
+                if (arr[j]>arr[j+1]) {
+                    double temp=arr[j];
+                    arr[j]=arr[j+1];
+                    arr[j+1]=temp;
+                }
+            }
+        }
+    }
+
+    public static void insercion(double[] arr) {
+        int n=arr.length;
+        for (int i=1;i<n;++i) {
+            double key=arr[i];
+            int j=i-1;
+
+            while (j>=0&&arr[j]>key) {
+                arr[j+1]=arr[j];
+                j=j-1;
+            }
+            arr[j+1]=key;
+        }
+    }
+
+    public static void seleccion(double[] arr) {
+        int n=arr.length;
+        for (int i=0;i<n-1;i++) {
+            int minIndex=i;
+            for (int j=i+1;j<n;j++) {
+                if (arr[j]<arr[minIndex]) {
+                    minIndex=j;
+                }
+            }
+            double temp=arr[minIndex];
+            arr[minIndex]=arr[i];
+            arr[i]=temp;
+        }
+    }
+
+    public static void merge(double[] arr, int l, int m, int r) {
+        int n1=m-l+1;
+        int n2=r-m;
+
+        double L[]=new double[n1];
+        double R[]=new double[n2];
+
+        for (int i=0;i<n1;++i) {
+            L[i]=arr[l+i];
+        }
+        for (int j=0;j<n2;++j) {
+            R[j]=arr[m+1+j];
+        }
+
+        int i=0,j=0;
+        int k=l;
+        while (i<n1&&j<n2) {
+            if (L[i]<=R[j]) {
+                arr[k]=L[i];
+                i++;
+            } else {
+                arr[k]=R[j];
+                j++;
+            }
+            k++;
+        }
+
+        while (i<n1) {
+            arr[k]=L[i];
+            i++;
+            k++;
+        }
+
+        while (j<n2) {
+            arr[k]=R[j];
+            j++;
+            k++;
+        }
+    }
+
+    public static void mergesort(double[] arr, int l, int r) {
+        if (l<r) {
+            int m=(l + r)/2;
+            mergesort(arr, l, m);
+            mergesort(arr, m + 1, r);
+            merge(arr, l, m, r);
+        }
+    }
+}
